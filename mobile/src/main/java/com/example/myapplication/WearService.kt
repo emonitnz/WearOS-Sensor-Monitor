@@ -1,4 +1,4 @@
-package com.example.assignmentthree
+package com.example.myapplication
 
 import android.util.Log
 import com.google.android.gms.wearable.MessageEvent
@@ -7,8 +7,9 @@ import kotlin.math.pow
 import kotlin.math.sqrt
 
 /**
- * A service that listens for messages from the Wear OS Data Layer.
- * It runs in the background even if the app UI is closed.
+ * A background service that listens for messages from the Wear OS Data Layer.
+ * It automatically processes incoming accelerometer and heart rate data,
+ * calculates moving averages, and updates the shared repository.
  */
 class WearService : WearableListenerService() {
 
@@ -30,36 +31,37 @@ class WearService : WearableListenerService() {
                     val y = values[1].toFloatOrNull() ?: 0f
                     val z = values[2].toFloatOrNull() ?: 0f
 
-                    // 1. Calculate raw magnitude
+                    // 1. Calculate raw magnitude (sqrt(x^2 + y^2 + z^2))
                     val rawMagnitude = sqrt(x.pow(2) + y.pow(2) + z.pow(2)).toDouble()
 
                     // 2. Calculate 10-reading moving average
                     accBuffer.add(rawMagnitude)
                     if (accBuffer.size > 10) {
-                        accBuffer.removeAt(0) //we remove the 11th buffer data and then count average
+                        accBuffer.removeAt(0)
                     }
                     val averageMagnitude = accBuffer.average()
 
-                    // 3. Log and update repository
+                    // 3. Update repository
                     Log.d("WearService", "Magnitude: %.2f m/s² (Avg 10: %.2f)".format(rawMagnitude, averageMagnitude))
                     SensorDataRepository.updateMagnitude(averageMagnitude)
                 }
             }
+
             "/heart_rate" -> {
-                // Decode the incoming heart-rate ByteArray as a String
                 val payload = String(messageEvent.data)
                 val rawHeartRate = payload.toDoubleOrNull() ?: 0.0
 
-                // Calculate 5-reading moving average
-                hrBuffer.add(rawHeartRate)
-                if (hrBuffer.size > 5) {
-                    hrBuffer.removeAt(0)
-                }
-                val averageHr = hrBuffer.average()
+                if (rawHeartRate > 0) {
+                    // Calculate 5-reading moving average
+                    hrBuffer.add(rawHeartRate)
+                    if (hrBuffer.size > 5) {
+                        hrBuffer.removeAt(0)
+                    }
+                    val averageHr = hrBuffer.average()
 
-                // Log and update repository for the UI
-                Log.d("WearService", "Received heart rate: $rawHeartRate BPM (Avg 5: %.1f)".format(averageHr))
-                SensorDataRepository.updateHeartRate(averageHr)
+                    Log.d("WearService", "Received heart rate: $rawHeartRate BPM (Avg 5: %.1f)".format(averageHr))
+                    SensorDataRepository.updateHeartRate(averageHr)
+                }
             }
         }
     }

@@ -1,12 +1,12 @@
-package com.example.assignmentthree
+package com.example.myapplication
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 /**
- * A simple singleton repository to share sensor data between the background
- * WearService and the Compose UI.
+ * A singleton repository to share real-time sensor data between the background
+ * WearService and the Compose Dashboard UI.
  */
 object SensorDataRepository {
     // Current heart rate (moving average)
@@ -17,14 +17,14 @@ object SensorDataRepository {
     private val _heartRateHistory = MutableStateFlow<List<Double>>(emptyList())
     val heartRateHistory: StateFlow<List<Double>> = _heartRateHistory.asStateFlow()
 
-    // --- Accelerometer Magnitude Data ---
+    // Acceleration Magnitude Data
     private val _currentMagnitude = MutableStateFlow(0.0)
     val currentMagnitude: StateFlow<Double> = _currentMagnitude.asStateFlow()
 
     private val _magnitudeHistory = MutableStateFlow<List<Double>>(emptyList())
     val magnitudeHistory: StateFlow<List<Double>> = _magnitudeHistory.asStateFlow()
 
-    // Max number of points to keep in history
+    // Max number of points to keep in history chart
     private const val MAX_HISTORY_SIZE = 50
 
     /**
