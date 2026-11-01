@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <style name="Theme.MyApplication" parent="android:Theme.Material.Light.NoActionBar" />
+    <!-- Dark theme base configuration to prevent initial blank/black screen flickering on Activity launch -->
+    <style name="Theme.MyApplication" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">#0B0D0F</item>
+        <item name="android:statusBarColor">#0B0D0F</item>
+        <item name="android:navigationBarColor">#0B0D0F</item>
+    </style>
 </resources>

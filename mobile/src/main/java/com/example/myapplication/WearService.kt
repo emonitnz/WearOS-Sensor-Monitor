@@ -7,13 +7,13 @@ import kotlin.math.pow
 import kotlin.math.sqrt
 
 /**
- * A background service that listens for messages from the Wear OS Data Layer.
- * It automatically processes incoming accelerometer and heart rate data,
- * calculates moving averages, and updates the shared repository.
+ * Background listener service registered in AndroidManifest.xml.
+ * Receives live Wear OS Data Layer messages sent from the paired smartwatch,
+ * calculates moving averages to smooth readings, and updates SensorDataRepository.
  */
 class WearService : WearableListenerService() {
 
-    // Lists to store readings for moving averages
+    // Buffer lists for computing smooth moving averages
     private val hrBuffer = mutableListOf<Double>()
     private val accBuffer = mutableListOf<Double>()
 
@@ -23,7 +23,7 @@ class WearService : WearableListenerService() {
         when (messageEvent.path) {
             "/sensor/data" -> {
                 val payload = String(messageEvent.data)
-                Log.d("WearService", "Received accelerometer data: $payload")
+                Log.d("WearService", "Received accelerometer payload: $payload")
 
                 val values = payload.split(",")
                 if (values.size == 3) {
@@ -31,7 +31,7 @@ class WearService : WearableListenerService() {
                     val y = values[1].toFloatOrNull() ?: 0f
                     val z = values[2].toFloatOrNull() ?: 0f
 
-                    // 1. Calculate raw magnitude (sqrt(x^2 + y^2 + z^2))
+                    // 1. Calculate raw 3D magnitude (sqrt(x^2 + y^2 + z^2))
                     val rawMagnitude = sqrt(x.pow(2) + y.pow(2) + z.pow(2)).toDouble()
 
                     // 2. Calculate 10-reading moving average
@@ -41,9 +41,9 @@ class WearService : WearableListenerService() {
                     }
                     val averageMagnitude = accBuffer.average()
 
-                    // 3. Update repository
-                    Log.d("WearService", "Magnitude: %.2f m/s² (Avg 10: %.2f)".format(rawMagnitude, averageMagnitude))
-                    SensorDataRepository.updateMagnitude(averageMagnitude)
+                    // 3. Update shared repository with raw axis values and average magnitude
+                    Log.d("WearService", "Acc X=%.2f Y=%.2f Z=%.2f Mag=%.2f".format(x, y, z, averageMagnitude))
+                    SensorDataRepository.updateAccelerometer(x, y, z, averageMagnitude)
                 }
             }
 
