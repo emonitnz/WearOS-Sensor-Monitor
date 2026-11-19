@@ -44,10 +44,6 @@ The application consists of two main modules:
 
 Smartwatch Sensors → Wear OS Application → Data Layer API → Android Mobile Application → Data Visualisation
 
-## Screenshots
-
-Add screenshots of your smartwatch and mobile application here.
-
 ## Installation and Setup
 
 1. Clone this repository.
