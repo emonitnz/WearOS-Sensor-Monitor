@@ -16,6 +16,12 @@ The Wear OS application collects sensor readings from the smartwatch, while the 
 - **Live Data Visualisation:** Displays heart rate and accelerometer readings on both devices.
 - **Wear OS Support:** Designed for a round smartwatch display.
 
+## Screenshots
+
+![Companion phone app and Wear OS watch app showing live heart rate and accelerometer data](docs/wearos-screens.png)
+
+*Left: the companion **phone app** dashboard with a live heart-rate chart and accelerometer X/Y/Z readings. Right: the **Wear OS watch app** showing live heart rate and accelerometer values on the round display.*
+
 ## Technologies Used
 
 - Kotlin
